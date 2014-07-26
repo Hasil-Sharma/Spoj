@@ -1,104 +1,93 @@
-#include <iostream>
 #include <stdio.h>
-#include <list>
-#include <algorithm>
-#include <limits.h>
-#include <map>
-using namespace std;
-int nodes, maxd, *maxt;
-int *array;
-int *md;
-list<int>* adjlist,adj;
-bool *visited;
-class Edge{
-public:
-	int u;
-	int v;
-	Edge(int tu,int tv){ u = tu; v = tv;}
-	int get_u(){ return u; }
-	int get_v(){ return v; }
+#include <stdlib.h>
+#include <string.h>
+#define N 50001
+int visited[N];
+
+int topmax;
+
+struct AdjListNode
+{
+	int dest;
+	int weight;
+	struct AdjListNode* next;
 };
 
-bool operator<(Edge a, Edge b){ return true; }
-bool operator==(Edge a, Edge b){ 
-	if((a.u == b.u && a.v == b.v))
-		return true;
-	else return false;
-}
-map<Edge,int> edgelist;
-Edge ref(1,1);
-void dfs_visit(int s)
+struct AdjList
 {
-	int dist;
-	list<int> :: iterator listitr;
-	map<Edge,int> :: iterator p;
-	for(listitr = adjlist[s].begin(); listitr != adjlist[s].end(); listitr++)
-	{
-		if(visited[*listitr] == false && array[s] != *listitr)
-		{
-			p = edgelist.begin();
-			while(p != edgelist.end())
-			{
-				if((p->first.u == *listitr && p->first.v == s) || (p->first.v == *listitr && p->first.u == s))
-				{
-					dist = p->second;
-					break;
-				}
-				p++;
-			}
-			dist = p->second;
-			//printf("%d %d :%d\n",s,*listitr,dist);
-			md[*listitr] = md[s] + dist;
-			array[*listitr] = s;
-			visited[*listitr] = true;
-			dfs_visit(*listitr);
-		}
-	}
-	return;
-}
-void dfs()
+	struct AdjListNode *head;
+};
+
+struct Graph
 {
-	int i,j;
-	maxd = INT_MIN;
-	for(i = 1; i <= nodes; i++)
+	int v;
+	struct AdjList* array;
+};
+
+struct Graph* createGraph(int V)
+{
+	struct Graph* graph = (struct Graph*) malloc(sizeof(struct Graph));
+	graph->v = V;
+	graph->array = (struct AdjList*)malloc((V+1)*sizeof(struct AdjList));
+	int i;
+	for(i = 0; i <= V; i++)
+		graph->array[i].head = NULL;
+	return graph;
+}
+
+struct AdjListNode* newAdjListNode(int dest,int weight)
+{
+	struct AdjListNode* newNode = (struct AdjListNode*) malloc(sizeof(struct AdjListNode));
+	newNode->dest = dest;
+	newNode->weight = weight;
+	newNode->next = NULL;
+	return newNode;
+}
+
+void addEdge(struct Graph* graph, int src, int dest,int weight)
+{
+	struct AdjListNode* newNode = newAdjListNode(dest,weight);
+	newNode->next = graph->array[src].head;
+	graph->array[src].head = newNode;
+
+	newNode = newAdjListNode(src,weight);
+	newNode->next = graph->array[dest].head;
+	graph->array[dest].head = newNode;
+}
+
+int max(int a, int b)
+{
+	return (a > b) ? a: b;
+}
+
+int dfs(struct Graph* graph, int vertex,int length)
+{
+	struct AdjListNode* temp = graph->array[vertex].head;
+	visited[vertex] += 1;
+	int temp_weight = temp->weight;
+	while(temp)
 	{
-		for(j = 1 ; j <= nodes; j++)
-		{
-			visited[j] = false;
-			array[j] = 0;
-			md[i] = INT_MIN;
-		}
-		if(visited[i]== false)
-		{
-			array[i] = -1;
-			visited[i] = true;
-			md[i] = 0;
-			dfs_visit(i);
-		}
-		maxt = max_element(md,md+nodes);
-		if(*maxt > maxd) maxd = (*maxt);
+		if(visited[temp->dest] <= 2)
+			temp_weight = (temp->weight,dfs(graph,temp->dest,length+temp_weight));
+		temp = temp->next;
 	}
+	printf("%d %d\n",vertex,temp_weight);
+	return temp_weight+length;
 }
 int main()
 {
-	int t,n,a,b,i,w;
+	int t,n,a,b,l,count,i,j;
 	scanf("%d",&t);
-	list<int> :: iterator listitr;
 	while(t--)
 	{
-		scanf("%d",&n);//number of node
-		nodes = n;
-		adjlist = new list<int>[n+1];
-		visited = new bool[n+1];
-		array = new int[n+1];
-		md = new int[n+1];
-		while(scanf("%d%d%d",&a,&b,&w) != EOF)
+		scanf("%d",&n);
+		struct Graph* graph = createGraph(n);
+		for( i = 0;i < n-1;  i++)
 		{
-			adjlist[a].push_back(b);
-			adjlist[b].push_back(a);
-			edgelist.insert(pair<Edge,int>(Edge(a,b),w));
+			scanf("%d %d %d",&a,&b,&l);
+			addEdge(graph,a,b,l);
 		}
-		dfs();
-		printf("%d\n", maxd);
+		dfs(graph,1,0);
 	}
+	return 0;
 }

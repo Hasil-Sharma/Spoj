@@ -1,97 +1,75 @@
 #include<stdio.h>
 #include<iostream>
+#define N 101
+long long A[N][N];
+long long B[N][N];
+long long ans[N][N];
+long long sum;
 using namespace std;
-long long int mul[100][100];
-int a[100][100],b[100][100];
-void getinput(int n,int a[][100])
+void getarray(long long int (*array)[N], int n)
 {
-	int i,j;
-	for(i = 0; i < n; i++)
-		for(j = 0; j < n; j++)
-			scanf("%d",&a[i][j]);
+	
+	for(int i = 0; i < n; i++)
+		for(int j = 0; j < n; j++)
+			scanf("%lld",&array[i][j]);
+
+	return;
 }
 
 void multiply(int n)
 {
-	int i,j,k;
-	for(i = 0; i < n; i++)
-	{
-		for(j = 0; j < n; j++)
+	sum = 0;
+	for(int i = 0; i < n; i++)
+		for(int j = 0; j < n; j++)
 		{
-			mul[i][j] = 0;
-			for(k = 0; k < n; k++)
-			{
-				mul[i][j] += a[i][k]*b[k][j];
-			}
+			ans[i][j] = 0;
+				for(int k = 0; k < n; k++)
+				{
+					ans[i][j] += A[i][k]*B[k][j];
+				}
+			sum += ans[i][j];
 		}
-	}
+	return;
 }
-
-long long int getsum(int n)
-{
-	int i,j;
-	long long int ans = 0;
-	for(i = 0; i < n; i++)
-		for(j = 0; j < n; j++)
-			ans += mul[i][j];
-
-	return ans;
-}
-
-void modifya(int I, int J, int n)
-{
-	int i,j,k;
-	for(j = 0; j < n; j++)
-	{
-		mul[I][j] = 0;
-		for(k = 0; k < n; k++)
-		{
-			mul[I][j] += a[I][k] * b[k][j];
-		}
-	}
-}
-
-void modifyb(int I, int J, int n)
-{
-	int i,j,k;
-	for(j = 0; j < n; j++)
-	{
-		mul[j][J] = 0;
-		for(k = 0; k < n; k++)
-		{
-			mul[j][J] += a[j][k] * b[k][J];
-		}
-	}
-}
-
 int main()
 {
-	int n,i,j,q,k;
-	long long int ans;
-	char name;
+	int n,q,i,j,k;
+	char c;
 	scanf("%d",&n);
-	getinput(n,a);
-	getinput(n,b);
+	getarray(A,n);
+	getarray(B,n);
 	multiply(n);
-	scanf("%d",&q);
+	cin >> q;
 	while(q--)
 	{
-		cin >> name >> i >> j >> k;
-		//name = getchar();
-		//scanf("%c%d%d%d",&name,&i,&j,&k);
-		if(name == 'A')
+		cin >> c >> i >> j >> k;
+		if(c == 'A')
 		{
-			a[i][j] = k;
-			modifya(i,j,n);
-			ans = getsum(n);
+			for(int p = 0; p < n; p++)
+				sum -= ans[i][p];
+			A[i][j] = k;
+			for(int a = 0; a < n; a++)
+			{
+				ans[i][a] = 0;
+				for(int b = 0; b < n; b++)
+						ans[i][a] += A[i][b]*B[b][a];
+				sum += ans[i][a];
+			}
 		}
-		else if(name == 'B')
+		else
 		{
-			b[i][j] = k;
-			modifyb(i,j,n);
-			ans = getsum(n);
+			for(int p = 0; p < n; p++)
+				sum -= ans[p][j];
+			B[i][j] = k;
+			for(int a = 0; a < n; a++)
+			{
+				ans[a][j] = 0;
+				for(int b = 0; b < n; b++)
+					ans[a][j] += A[a][b]*B[b][j];
+				sum += ans[a][j];
+			}
 		}
-		printf("%lld\n",ans);
+		cout << sum << endl;
 	}
-
+	return 0;
 }

@@ -1,45 +1,53 @@
+#include <cstdio>
 #include <iostream>
+#include <cstring>
 #include <string>
 #include <cstdlib>
 using namespace std;
-typedef long long int ll;
-ll gcd(ll x, ll y)
+
+long long int gcd(long long int x, long long int y)
 {
-	if (y == 0) return x;
-	else return gcd(y, x%y);
+	if(y == 0) return x;
+	else return gcd(y,x%y);
 }
-ll getpow(int length)
+
+long long int getnum(string str)
 {
-	int i = 1;
-	ll ans = 1;
-	for(i = 0; i < length ; i++)
-		ans = ans * 10;
-	return ans;
+	char *strc = const_cast<char*>(str.c_str());
+	long long int num1 = atoll(strc);
+	long long int num2 = num1/10;
+	//printf("Num1 && Num2 : ");
+	//printf("%lld %lld\n",num1,num2);
+	return num1-num2;
+}
+
+long long int getdem(int count)
+{
+	long long int num1 = 1,num2 = 1,temp = 1;
+	for(int i = 0;i < count; i++)
+		temp *= 10;
+	num1 = temp;
+	num2 = num1/10;
+	//printf("%d %lld %lld\n",count,num1,num2);
+	return num1 - num2;
 }
 int main()
 {
-	string s,num1,num2;
-	ll a,b,p,q,x1,y1,d,x2,y2;
-	int index;
-	cin >> s;
-	while(s != "0")
+	string str;
+	while(true)
 	{
-		index = s.find("...");
-		num1 = s.substr(2,s.length()-5);
-		a = getpow(num1.length());
-		b = 10*a;
-		cout << a << endl;
-		cout << b << endl;
-		num2 = num1 + num1[num1.length()-1];
-		p = atoll(num1.c_str());
-		q = atoll(num2.c_str());
-		x1 = q - p;
-		y1 = b - a;
-		d = gcd(x1,y1);
-		//cout << d << endl;
-		//cout << x << endl;
-		//cout << y << endl;
-		cout << x1/d << "/" << y1/d << endl;
-		cin >> s;
-	}	
+		int count,index;
+		long long int num,dem;
+		cin >> str;
+		if(str == "0") break;
+		index = str.find("...");
+		count = index - 2;
+		str.erase(str.begin()+index,str.end());
+		str.erase(str.begin(),str.begin()+2);
+		num = getnum(str);
+		dem = getdem(count);
+		long long int hcf = gcd(num,dem);
+		cout << num/hcf << "/" << dem/hcf << endl;
+	}
+	return 0;
 }

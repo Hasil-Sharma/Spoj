@@ -3,7 +3,7 @@
 #include <vector>
 #define maxsize 1100001
 #define mod 100000
-static int fibNum[maxsize];
+static unsigned long long int num[maxsize];
 using namespace std;
 bool compare(int a,int b)
 {
@@ -12,10 +12,13 @@ bool compare(int a,int b)
 int main()
 {
 	int t,a,b,count,si,ei,j,index = 1;
-	fibNum[0] = 0;
-	fibNum[1] = 1;
+	//fibNum[0] = 0;
+	//fibNum[1] = 1;
 	//finding all the fibo number unti 1100000
-	for(int i = 2; i < maxsize; i++) fibNum[i] = (fibNum[i-1]%mod + fibNum[i-2]%mod)%mod;
+	for(unsigned long long int n = 1; n < maxsize; n++) 
+		{
+			num[n] = ((n%mod)*((n+1)%mod)*(2*n+1)%mod)%mod;
+		}
 	scanf("%d",&t);
 	while(t--)
 	{
@@ -24,19 +27,21 @@ int main()
 		si = a-1;
 		ei = si+b;
 		j = 0;
-		vector<int> v;
+		vector<unsigned long long int> v;
+		vector<unsigned long long int> :: iterator p;
 		while(si <= ei)
 		{
-			v.push_back(fibNum[si]);
+			v.push_back(num[si]);
 			si++;
 		}
-		make_heap(v.begin(),v.end(),compare);
+		sort(v.begin(),v.end());
 		printf("Case %d:",index++);
-		while(count <= 100 && v.size())
+		p = v.begin();
+		while(count <= 100 &&  p!= v.end())
 		{
-			pop_heap(v.begin(),v.end(),compare);
-			printf(" %d",v.back());
-			v.pop_back();
+			//pop_heap(v.begin(),v.end(),compare);
+			printf(" %llu",*p);
+			p++;
 			count++;
 		}
 		printf("\n");

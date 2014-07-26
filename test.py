@@ -1,7 +1,5 @@
-files = open("./roman.txt")
-lines = files.readlines()
-for line in lines:
-	print line.split("=")[1][:-1]
+print 1
+print "100"*40000
 # count  = 0
 # for i in range(1,5000):
 # 	count += 1
